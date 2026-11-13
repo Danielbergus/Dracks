@@ -1,0 +1,406 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DRACKS</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#090914;color:#fff;
+ font-family:Arial,sans-serif;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+header{
+ height:75px;background:#11111e;
+ border-bottom:1px solid #292940;
+ display:flex;align-items:center;
+ justify-content:space-between;padding:0 25px;
+ position:sticky;top:0;z-index:5;
+}
+.logo{font-size:26px;font-weight:900;color:#a978ff}
+.logo span{color:white}
+.header-right{display:flex;gap:10px}
+.btn{
+ border:0;border-radius:9px;padding:11px 16px;
+ background:#9455ff;color:white;font-weight:bold;
+}
+.btn:hover{background:#b38aff}
+.layout{display:flex;min-height:calc(100vh - 75px)}
+.sidebar{
+ width:220px;background:#11111e;
+ padding:22px 13px;border-right:1px solid #292940;
+ flex-shrink:0;
+}
+.nav{
+ display:block;width:100%;text-align:left;
+ padding:14px;border:0;border-radius:9px;
+ color:#aaa;background:transparent;margin-bottom:7px;
+}
+.nav:hover,.nav.active{background:#29203c;color:white}
+.nav-title{
+ color:#777;font-size:11px;
+ letter-spacing:2px;padding:20px 12px 10px;
+}
+main{flex:1;min-width:0;padding:30px}
+.page{display:none}
+.page.active{display:block}
+.hero{
+ text-align:center;padding:55px 15px;
+ border:1px solid #382653;border-radius:20px;
+ background:radial-gradient(ellipse at center,#30204d,#11111e);
+}
+.hero h1{font-size:55px;margin:0}
+.purple{color:#ae83ff}
+.hero p{color:#aaa}
+.search{
+ display:flex;max-width:620px;margin:25px auto;
+ background:#202033;border:1px solid #8055ba;
+ padding:5px;border-radius:30px;
+}
+.search input{
+ flex:1;min-width:0;background:transparent;
+ border:0;outline:0;color:white;padding:13px;
+}
+.search button{
+ border:0;border-radius:25px;
+ background:#9455ff;color:white;padding:12px 18px;
+}
+.shortcuts{
+ display:flex;justify-content:center;
+ flex-wrap:wrap;gap:12px;margin-top:25px;
+}
+.shortcut{
+ width:95px;padding:15px 5px;
+ background:#1c1b2d;border-radius:12px;
+ text-align:center;color:white;text-decoration:none;
+ transition:.2s;
+}
+.shortcut:hover{transform:translateY(-5px);background:#35244c}
+.shortcut b{display:block;font-size:29px;margin-bottom:8px}
+.section-title{margin:25px 0 18px}
+.grid{
+ display:grid;grid-template-columns:
+ repeat(auto-fit,minmax(180px,1fr));gap:17px;
+}
+.game{
+ background:#171727;border:1px solid #303047;
+ border-radius:15px;padding:15px;transition:.2s;
+}
+.game:hover{transform:translateY(-5px);border-color:#a978ff}
+.game-icon{
+ height:115px;background:linear-gradient(135deg,#42245f,#19192b);
+ border-radius:10px;display:grid;place-items:center;
+ font-size:50px;
+}
+.game p{color:#999;font-size:13px}
+.game a{
+ display:block;text-align:center;
+ background:#9455ff;color:white;
+ text-decoration:none;padding:11px;border-radius:8px;
+}
+.panel{
+ background:#151525;border:1px solid #303047;
+ padding:20px;border-radius:15px;margin-bottom:18px;
+}
+.field{
+ width:100%;padding:13px;background:#202033;
+ border:1px solid #44405e;color:white;
+ border-radius:9px;margin:8px 0;
+}
+.friend{
+ display:flex;align-items:center;
+ justify-content:space-between;
+ padding:12px;background:#202033;
+ border-radius:10px;margin-top:10px;
+}
+.avatar{
+ background:#7545bd;width:38px;height:38px;
+ border-radius:50%;display:grid;place-items:center;
+ font-weight:bold;
+}
+.friend-info{display:flex;gap:12px;align-items:center}
+.chat-layout{
+ display:grid;grid-template-columns:180px 1fr;
+ gap:15px;min-height:400px;
+}
+.rooms button{
+ display:block;width:100%;text-align:left;
+ background:#202033;color:white;border:0;
+ padding:13px;border-radius:8px;margin-bottom:8px;
+}
+.rooms button.active{background:#7545bd}
+.chat-box{
+ display:flex;flex-direction:column;
+ background:#151525;border:1px solid #303047;
+ border-radius:12px;min-height:400px;padding:15px;
+}
+.messages{flex:1;overflow-y:auto;max-height:350px}
+.message{
+ background:#24243a;border-radius:9px;
+ padding:10px;margin:8px 0;overflow-wrap:anywhere;
+}
+.message small{color:#b48aff}
+.chat-input{display:flex;gap:8px;margin-top:12px}
+.chat-input input{flex:1;min-width:0}
+.muted{color:#999;font-size:13px}
+#toast{
+ position:fixed;bottom:20px;right:20px;
+ background:#29203c;padding:15px;border-radius:10px;
+ display:none;z-index:20;
+}
+footer{text-align:center;color:#777;padding:25px}
+@media(max-width:650px){
+ .sidebar{width:65px;padding:10px 5px}
+ .nav{font-size:0;text-align:center;padding:15px 2px}
+ .nav::first-letter{font-size:20px}
+ .nav-title{display:none}
+ main{padding:15px}
+ .hero h1{font-size:38px}
+ .chat-layout{grid-template-columns:1fr}
+ .rooms{display:flex;gap:5px;flex-wrap:wrap}
+ .rooms button{width:auto}
+ header{padding:0 12px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">🐉 DRA<span>CKS</span></div>
+ <div class="header-right">
+  <button class="btn" onclick="invite()">＋ Invite friends</button>
+  <button class="btn" onclick="fullScreen()">⛶</button>
+ </div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar">
+ <div class="nav-title">MENU</div>
+ <button class="nav active" onclick="showPage('home',this)">🏠 Home</button>
+ <button class="nav" onclick="showPage('games',this)">🎮 Games</button>
+ <button class="nav" onclick="showPage('friends',this)">👥 Friends</button>
+ <button class="nav" onclick="showPage('chat',this)">💬 Chat rooms</button>
+
+ <div class="nav-title">COMMUNITY</div>
+ <button class="nav" onclick="invite()">➕ Invite people</button>
+</aside>
+
+<main>
+
+<!-- HOME -->
+<section id="home" class="page active">
+ <div class="hero">
+  <p>✦ WELCOME TO YOUR UNIVERSE ✦</p>
+  <h1>DRA<span class="purple">CKS</span></h1>
+  <p>Games. Friends. Community. Everything in one place.</p>
+
+  <form class="search" action="https://www.google.com/search" method="GET" target="_blank">
+   <input name="q" placeholder="🔎 Search Google..." autocomplete="off" required>
+   <button type="submit">Search</button>
+  </form>
+
+  <div class="shortcuts">
+   <a class="shortcut" href="https://roblox.com/" target="_blank"><b>🎮</b>Roblox</a>
+   <a class="shortcut" href="https://minecraft.net/" target="_blank"><b>⛏️</b>Minecraft</a>
+   <a class="shortcut" href="https://fortnite.com/" target="_blank"><b>⚡</b>Fortnite</a>
+   <a class="shortcut" href="https://innersloth.com/" target="_blank"><b>🚀</b>Among Us</a>
+   <a class="shortcut" href="https://youtube.com/" target="_blank"><b>▶️</b>YouTube</a>
+  </div>
+ </div>
+
+ <h2 class="section-title">🔥 Popular games</h2>
+ <div class="grid">
+  <div class="game"><div class="game-icon">🎮</div><h3>Roblox</h3><p>Millions of experiences</p><a href="https://roblox.com/" target="_blank">PLAY</a></div>
+  <div class="game"><div class="game-icon">⛏️</div><h3>Minecraft</h3><p>Build your world</p><a href="https://minecraft.net/" target="_blank">PLAY</a></div>
+  <div class="game"><div class="game-icon">⚡</div><h3>Fortnite</h3><p>Battle and explore</p><a href="https://fortnite.com/" target="_blank">PLAY</a></div>
+  <div class="game"><div class="game-icon">🚀</div><h3>Among Us</h3><p>Find the impostor</p><a href="https://innersloth.com/" target="_blank">PLAY</a></div>
+ </div>
+</section>
+
+<!-- GAMES -->
+<section id="games" class="page">
+ <h1>🎮 Game library</h1>
+ <p class="muted">Find your next favorite game.</p>
+ <input class="field" id="gameSearch" placeholder="Search games..." oninput="filterGames()">
+ <div class="grid" id="gameGrid"></div>
+</section>
+
+<!-- FRIENDS -->
+<section id="friends" class="page">
+ <h1>👥 Friends</h1>
+ <div class="panel">
+  <h3>Add a friend</h3>
+  <p class="muted">Add a display nickname to your local friends list.</p>
+  <input id="friendName" class="field" placeholder="Friend nickname">
+  <button class="btn" onclick="addFriend()">＋ Add friend</button>
+ </div>
+ <div class="panel">
+  <h3>Your friends</h3>
+  <div id="friendList"><p class="muted">No friends added yet.</p></div>
+ </div>
+ <button class="btn" onclick="invite()">✉️ Invite friends to Dracks</button>
+</section>
+
+<!-- CHAT -->
+<section id="chat" class="page">
+ <h1>💬 Dracks community</h1>
+ <p class="muted">Demo chat rooms. Messages are temporary and visible only in this browser.</p>
+ <div class="chat-layout">
+  <div class="rooms">
+   <button class="active" onclick="changeRoom('general',this)"># General</button>
+   <button onclick="changeRoom('gaming',this)"># Gaming</button>
+   <button onclick="changeRoom('roblox',this)"># Roblox</button>
+   <button onclick="changeRoom('minecraft',this)"># Minecraft</button>
+  </div>
+  <div class="chat-box">
+   <h3 id="roomTitle"># general</h3>
+   <div class="messages" id="messages">
+    <div class="message"><small>DRACKS BOT</small><br>Welcome to Dracks! Have fun and be respectful.</div>
+   </div>
+   <div class="chat-input">
+    <input class="field" id="chatInput" placeholder="Message this room..." maxlength="300">
+    <button class="btn" onclick="sendMessage()">Send</button>
+   </div>
+  </div>
+ </div>
+</section>
+
+<footer>🐉 DRACKS © 2026 • YOUR GAMING UNIVERSE</footer>
+
+</main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const gameData=[
+ ["Roblox","🎮","Millions of player-created games","https://roblox.com/"],
+ ["Minecraft","⛏️","Build and explore","https://minecraft.net/"],
+ ["Fortnite","⚡","Battle Royale and more","https://fortnite.com/"],
+ ["Among Us","🚀","Find the impostor","https://innersloth.com/"],
+ ["Rocket League","🚗","Cars and football","https://rocketleague.com/"],
+ ["Subway Surfers","🏃","Endless runner","https://subwaysurfers.com/"],
+ ["Chess","♟️","Play chess online","https://chess.com/"],
+ ["Brawl Stars","⭐","Multiplayer action","https://supercell.com/en/games/brawlstars/"],
+ ["Valorant","🎯","Tactical shooter","https://playvalorant.com/"],
+ ["Fall Guys","👑","Party game","https://www.fallguys.com/"]
+];
+
+function showPage(id,button){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));
+ if(button)button.classList.add("active");
+}
+
+function fullScreen(){
+ if(!document.fullscreenElement){
+  document.documentElement.requestFullscreen?.();
+ }else{
+  document.exitFullscreen?.();
+ }
+}
+
+function invite(){
+ const url=location.href.split("#")[0]+"#join-dracks";
+ if(navigator.share){
+  navigator.share({title:"Join me on Dracks!",text:"Let's check out Dracks!",url:url}).catch(()=>{});
+ }else if(navigator.clipboard){
+  navigator.clipboard.writeText(url).then(()=>notify("Invite link copied!"));
+ }else{
+  prompt("Copy your Dracks invite link:",url);
+ }
+}
+
+function notify(message){
+ const t=document.getElementById("toast");
+ t.textContent=message;t.style.display="block";
+ setTimeout(()=>t.style.display="none",2500);
+}
+
+function addFriend(){
+ const input=document.getElementById("friendName");
+ const name=input.value.trim();
+ if(!name)return notify("Enter a nickname first.");
+ if(name.length>24)return notify("Nickname is too long.");
+ const list=document.getElementById("friendList");
+ if(list.querySelector(".muted"))list.innerHTML="";
+ const item=document.createElement("div");
+ item.className="friend";
+ const info=document.createElement("div");
+ info.className="friend-info";
+ const avatar=document.createElement("div");
+ avatar.className="avatar";
+ avatar.textContent=name[0].toUpperCase();
+ const label=document.createElement("span");
+ label.textContent=name;
+ info.append(avatar,label);
+ const remove=document.createElement("button");
+ remove.className="btn";
+ remove.textContent="Remove";
+ remove.onclick=()=>item.remove();
+ item.append(info,remove);
+ list.append(item);
+ input.value="";
+}
+
+const grid=document.getElementById("gameGrid");
+gameData.forEach(g=>{
+ const card=document.createElement("div");
+ card.className="game";
+ const icon=document.createElement("div");
+ icon.className="game-icon";icon.textContent=g[1];
+ const title=document.createElement("h3");title.textContent=g[0];
+ const desc=document.createElement("p");desc.textContent=g[2];
+ const link=document.createElement("a");
+ link.href=g[3];link.target="_blank";link.rel="noopener";
+ link.textContent="OPEN GAME";
+ card.append(icon,title,desc,link);
+ grid.append(card);
+});
+
+function filterGames(){
+ const q=document.getElementById("gameSearch").value.toLowerCase();
+ document.querySelectorAll("#gameGrid .game").forEach(card=>{
+  card.hidden=!card.textContent.toLowerCase().includes(q);
+ });
+}
+
+let room="general";
+function changeRoom(name,button){
+ room=name;
+ document.getElementById("roomTitle").textContent="# "+name;
+ document.querySelectorAll(".rooms button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ document.getElementById("messages").innerHTML=
+ '<div class="message"><small>DRACKS BOT</small><br>Welcome to #'+name+'!</div>';
+}
+
+function sendMessage(){
+ const input=document.getElementById("chatInput");
+ const value=input.value.trim();
+ if(!value)return;
+ const message=document.createElement("div");
+ message.className="message";
+ const author=document.createElement("small");
+ author.textContent="You";
+ const content=document.createElement("div");
+ content.textContent=value;
+ message.append(author,content);
+ document.getElementById("messages").append(message);
+ input.value="";
+ message.scrollIntoView({block:"nearest"});
+}
+
+document.getElementById("chatInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendMessage();
+});
+</script>
+</body>
+</html>
